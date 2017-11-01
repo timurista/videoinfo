@@ -1,18 +1,25 @@
 // node project
 const electron = require('electron');
+const ffmpeg = require('fluent-ffmpeg');
+const {app, BrowserWindow, ipcMain} = electron;
 
-const {app, BrowserWindow} = electron;
-
+let mainWindow;
 
 app.on('ready', () => {
   console.log('app is running...');
-  const mainWindow = new BrowserWindow({});
+  mainWindow = new BrowserWindow({});
   mainWindow.loadURL(`file://${__dirname}/index.html`);
+});
+
+ipcMain.on('video:submit', (event, path) => {
+  ffmpeg.ffprobe(path, (err, meta) => {
+    if (err || !meta) return;
+    mainWindow.webContents.send('video:getDuration', meta.format.duration);
+  });
 })
-// electron starts
 
-// app process is created
 
-// app is ready to do things
 
-// app closes down
+// logic goes here, keep it out of web app side of things
+// OS is in electron side of things
+

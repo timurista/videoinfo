@@ -6,16 +6,23 @@
       <label>Select a video</label>
       <input type="file" accept="video/*" />
     </div>
-
     <button type="submit">Get Info</button>
+    <div id="duration">duration</div>
   </form>
   <script>
+    // electron has require, chrome does not
+    const electron = require('electron');
+    const { ipcRenderer } = electron; // communicates to electron process
+
+
     document.querySelector('form').addEventListener('submit', (event) => {
       event.preventDefault();
-      const file = document.querySelector('input').files[0];
-      // cli tool ffmpeg, well developed
+      const {path} = document.querySelector('input').files[0];
+      ipcRenderer.send('video:submit', path);
+    });
+    ipcRenderer.on('video:getDuration', 
+      (evt, duration) => 
+        document.querySelector('#duration').textContent = `duration: ${duration.toFixed(2)} seconds`);
 
-      debugger;
-    })
   </script>
 </body>
